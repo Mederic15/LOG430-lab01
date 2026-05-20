@@ -20,7 +20,7 @@ jobs:
 
       - name: Démarrer le conteneur
         run: |
-          docker network create labo01-network
+          docker network inspect labo01-network >/dev/null 2>&1 || docker network create labo01-network
           docker compose up -d
 
       - name: Attendre MySQL
@@ -39,7 +39,7 @@ jobs:
           sleep 5
 
       - name: Éxécuter les tests (TODO - ajouter test_products)
-        run: docker exec store_manager_cli pytest ./src/tests/test_user.py
+        S
 
       - name: Cleanup
         if: always()
