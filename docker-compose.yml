@@ -9,6 +9,9 @@ services:
       - mongo
     stdin_open: true
     tty: true  
+
+    environment:
+      MONGO_URI: mongodb://mongo:27017
     networks:
       - labo01-network
 
