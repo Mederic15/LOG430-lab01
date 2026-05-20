@@ -11,7 +11,7 @@ services:
     tty: true  
 
     environment:
-      MONGO_URI: mongodb://mongo:27017
+      MONGO_URI: mongodb://labo01:labo01@mongo:27017
     networks:
       - labo01-network
 
