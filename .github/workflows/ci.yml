@@ -24,6 +24,22 @@ jobs:
           docker network inspect labo01-network >/dev/null 2>&1 || docker network create labo01-network
           docker-compose up -d
 
+      - name: Seed MongoDB
+        run: |
+          docker exec mongo mongosh log430_lab01 --eval '
+            db.users.insertMany([
+              { name: "User1", email: "u1@test.com" },
+              { name: "User2", email: "u2@test.com" },
+              { name: "User3", email: "u3@test.com" }
+            ]);
+
+            db.products.insertMany([
+              { name: "P1", brand: "B1", price: 10 },
+              { name: "P2", brand: "B2", price: 20 },
+              { name: "P3", brand: "B3", price: 30 }
+            ]);
+          '
+
       - name: Attendre MySQL
         run: |
           sleep 10
