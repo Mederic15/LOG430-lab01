@@ -24,9 +24,22 @@ jobs:
           docker network inspect labo01-network >/dev/null 2>&1 || docker network create labo01-network
           docker-compose up -d
 
+      - name: Attendre MongoDB
+        run: |
+          timeout=60
+          until docker exec mongo mongosh -u labo01 -p labo01 --authenticationDatabase admin --eval "db.runCommand({ ping: 1 })" >/dev/null 2>&1; do
+            echo "Waiting for MongoDB..."
+            sleep 3
+            timeout=$((timeout - 3))
+            if [ $timeout -le 0 ]; then
+              echo "MongoDB failed to start"
+              exit 1
+            fi
+          done
+
       - name: Seed MongoDB
         run: |
-          docker exec mongo mongosh log430_lab01 --eval '
+          docker exec mongo mongosh -u labo01 -p labo01 --authenticationDatabase admin log430_lab01 --eval '
             db.users.insertMany([
               { name: "User1", email: "u1@test.com" },
               { name: "User2", email: "u2@test.com" },
