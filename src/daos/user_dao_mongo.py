@@ -7,7 +7,7 @@ from models.user import User
 class UserDAOMongo:
     def __init__(self):
         load_dotenv()
-        mongo_uri = os.getenv('MONGO_URI')
+        mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
         self.client = pymongo.MongoClient(mongo_uri)
         self.db = self.client['log430_lab01']
         self.collection = self.db['users']
