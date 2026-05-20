@@ -21,7 +21,7 @@ jobs:
       - name: Démarrer le conteneur
         run: |
           docker network inspect labo01-network >/dev/null 2>&1 || docker network create labo01-network
-          docker compose up -d
+          docker-compose up -d
 
       - name: Attendre MySQL
         run: |
@@ -43,4 +43,4 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: docker compose down -v
+        run: docker-compose down -v
