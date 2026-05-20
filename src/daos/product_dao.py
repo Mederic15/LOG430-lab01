@@ -1,50 +1,56 @@
-"""
-Product DAO (Data Access Object)
-SPDX - License - Identifier: LGPL - 3.0 - or -later
+"""Product DAO (Data Access Object)
+SPDX - License - Identifier: LGPL-3.0-or-later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+
 import os
 from dotenv import load_dotenv
-import mysql.connector
-from models.user import User
+import pymongo
+from bson import ObjectId
+
 
 class ProductDAO:
     def __init__(self):
-        try:
-            env_path = ".env"
-            print(os.path.abspath(env_path))
-            load_dotenv(dotenv_path=env_path)
-            db_host = os.getenv("MYSQL_HOST")
-            db_name = os.getenv("MYSQL_DB_NAME")
-            db_user = os.getenv("DB_USERNAME")
-            db_pass = os.getenv("DB_PASSWORD")     
-            self.conn = mysql.connector.connect(host=db_host, user=db_user, password=db_pass, database=db_name)   
-            self.cursor = self.conn.cursor()
-        except FileNotFoundError as e:
-            print("Attention : Veuillez créer un fichier .env")
-        except Exception as e:
-            print("Erreur : " + str(e))
+        load_dotenv()
+        mongo_uri = os.getenv("MONGO_URI")
+        self.client = pymongo.MongoClient(mongo_uri)
+        self.db = self.client["log430_lab01"]
+        self.collection = self.db["products"]
 
     def select_all(self):
-        """ Select all products from MySQL """
-        pass
+        """Select all products from MongoDB."""
+        products = list(self.collection.find())
+        return [
+            (str(product["_id"]), product["name"], product["brand"], product["price"])
+            for product in products
+        ]
 
     def insert(self, product):
-        """ Insert given product into MySQL """
-        pass
+        """Insert given product into MongoDB."""
+        self.collection.insert_one(
+            {"name": product.name, "brand": product.brand, "price": product.price}
+        )
 
     def update(self, product):
-        """ Update given product in MySQL """
-        pass
+        """Update given product in MongoDB."""
+        self.collection.update_one(
+            {"_id": ObjectId(product.id)},
+            {
+                "$set": {
+                    "name": product.name,
+                    "brand": product.brand,
+                    "price": product.price,
+                }
+            },
+        )
 
     def delete(self, product_id):
-        """ Delete product from MySQL with given product ID """
-        pass
+        """Delete product from MongoDB with given product ID."""
+        self.collection.delete_one({"_id": ObjectId(product_id)})
 
-    def delete_all(self): # extra
-        """ Empty products table in MySQL """
-        pass
-        
+    def delete_all(self):
+        """Empty products collection in MongoDB."""
+        self.collection.delete_many({})
+
     def close(self):
-        self.cursor.close()
-        self.conn.close()
+        self.client.close()
