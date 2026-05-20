@@ -4,7 +4,6 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 
-#HA
 from views.menu_view import MenuView
 from views.product_view import ProductView
 from views.user_view import UserView
